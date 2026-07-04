@@ -1,0 +1,14 @@
+import { useCallback, useState } from 'react';
+
+/**
+ * Small helper for toggling modals, dropdowns, and panels.
+ */
+export function useDisclosure(initial = false) {
+  const [isOpen, setIsOpen] = useState(initial);
+
+  const open = useCallback(() => setIsOpen(true), []);
+  const close = useCallback(() => setIsOpen(false), []);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+
+  return { isOpen, open, close, toggle };
+}
