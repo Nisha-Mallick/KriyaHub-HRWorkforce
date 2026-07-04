@@ -1,18 +1,17 @@
-import { useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Bell, LogOut, User } from 'lucide-react';
+import { useRef } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Bell, LogOut, User, Users } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useDisclosure } from '../../hooks/useDisclosure.js';
 import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { NAV_ITEMS, ADMIN_NAV_ITEMS } from '../../utils/constants.js';
 import { cn } from '../../utils/cn.js';
 import Avatar from './Avatar.jsx';
-import AuthModal from '../auth/AuthModal.jsx';
 
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
   const { isOpen, toggle, close } = useDisclosure(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const navigate = useNavigate();
   const menuRef = useRef(null);
   useClickOutside(menuRef, close);
 
@@ -23,8 +22,10 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 border-b border-border bg-card">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <NavLink to="/" className="flex items-center gap-2 shrink-0">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white">K</span>
-          <span className="hidden text-base font-semibold text-text-primary sm:inline">KriyaHub</span>
+          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <span className="hidden text-2xl font-bold text-gray-900 tracking-tight sm:inline">KriyaHub<span className="text-primary-500">HR</span></span>
         </NavLink>
 
         <nav className="hidden flex-1 items-center gap-1 md:flex" aria-label="Primary">
@@ -99,7 +100,7 @@ export default function Navbar() {
             ) : (
               <button
                 type="button"
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={() => navigate('/login')}
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-ring"
               >
                 Sign In / Sign Up
@@ -125,11 +126,6 @@ export default function Navbar() {
           </NavLink>
         ))}
       </nav>
-
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-      />
     </header>
   );
 }
