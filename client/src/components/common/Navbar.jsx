@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Bell, LogOut, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -7,10 +7,12 @@ import { useClickOutside } from '../../hooks/useClickOutside.js';
 import { NAV_ITEMS, ADMIN_NAV_ITEMS } from '../../utils/constants.js';
 import { cn } from '../../utils/cn.js';
 import Avatar from './Avatar.jsx';
+import AuthModal from '../auth/AuthModal.jsx';
 
 export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
   const { isOpen, toggle, close } = useDisclosure(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const menuRef = useRef(null);
   useClickOutside(menuRef, close);
 
@@ -52,41 +54,56 @@ export default function Navbar() {
           </button>
 
           <div className="relative" ref={menuRef}>
-            <button
-              type="button"
-              onClick={toggle}
-              aria-haspopup="menu"
-              aria-expanded={isOpen}
-              className="flex items-center gap-2 rounded-full focus-ring"
-            >
-              <Avatar name={user?.name} color={user?.avatarColor} size="sm" statusDot="present" />
-            </button>
-
-            {isOpen && (
-              <div
-                role="menu"
-                className="absolute right-0 mt-2 w-48 rounded-xl border border-border bg-card p-1.5 shadow-card"
-              >
-                <NavLink
-                  to={profilePath}
-                  onClick={close}
-                  role="menuitem"
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-primary hover:bg-gray-100"
-                >
-                  <User className="h-4 w-4" /> My Profile
-                </NavLink>
+            {user ? (
+              <>
                 <button
                   type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    close();
-                    logout();
-                  }}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-danger hover:bg-red-50"
+                  onClick={toggle}
+                  aria-haspopup="menu"
+                  aria-expanded={isOpen}
+                  className="flex items-center gap-2 rounded-full focus-ring p-1 hover:bg-gray-100 transition-colors"
                 >
-                  <LogOut className="h-4 w-4" /> Log Out
+                  <Avatar name={user?.name} src={user?.avatarUrl} color={user?.avatarColor} size="sm" statusDot="present" />
+                  <span className="hidden text-sm font-medium text-text-primary sm:block pr-2">
+                    {user?.name}
+                  </span>
                 </button>
-              </div>
+
+                {isOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 mt-2 w-48 rounded-xl border border-border bg-card p-1.5 shadow-card"
+                  >
+                    <NavLink
+                      to={profilePath}
+                      onClick={close}
+                      role="menuitem"
+                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-text-primary hover:bg-gray-100"
+                    >
+                      <User className="h-4 w-4" /> My Profile
+                    </NavLink>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        close();
+                        logout();
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-danger hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" /> Log Out
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-600 focus-ring"
+              >
+                Sign In / Sign Up
+              </button>
             )}
           </div>
         </div>
@@ -108,6 +125,11 @@ export default function Navbar() {
           </NavLink>
         ))}
       </nav>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </header>
   );
 }
