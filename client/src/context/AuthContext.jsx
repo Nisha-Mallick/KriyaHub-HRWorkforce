@@ -9,8 +9,8 @@ import { CURRENT_USER } from '../data/mockData.js';
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // Demo default: signed-in employee so the UI is browsable end-to-end.
-  const [user, setUser] = useState(CURRENT_USER);
+  // Demo default: start as null to show login/signup flow
+  const [user, setUser] = useState(null);
 
   const value = useMemo(
     () => ({
